@@ -7,6 +7,7 @@ import {Icon} from "@iconify/react";
 import {cn} from "@nextui-org/react";
 import Markdown from 'react-markdown';
 import { useTypingEffect } from "@/hooks/useTypingEffect";
+import styles from './ChatMessageCard.module.css';
 
 export type MessageCardProps = React.HTMLAttributes<HTMLDivElement> & {
   avatar?: string;
@@ -16,6 +17,7 @@ export type MessageCardProps = React.HTMLAttributes<HTMLDivElement> & {
   status?: "success" | "failed";
   attempts?: number;
   messageClassName?: string;
+  isTyping: boolean;
   onAttemptChange?: (attempt: number) => void;
   onMessageCopy?: (content: string | string[]) => void;
   onFeedback?: (feedback: "like" | "dislike") => void;
@@ -37,10 +39,12 @@ const ChatMessageCard = React.forwardRef<HTMLDivElement, MessageCardProps>(
       onAttemptFeedback,
       className,
       messageClassName,
+      isTyping,
       ...props
     },
     ref,
   ) => {
+
     const [feedback, setFeedback] = React.useState<"like" | "dislike">();
     const [attemptFeedback, setAttemptFeedback] = React.useState<"like" | "dislike" | "same">();
 
@@ -90,8 +94,6 @@ const ChatMessageCard = React.forwardRef<HTMLDivElement, MessageCardProps>(
       [onAttemptFeedback],
     );
 
-    const animatedText = useTypingEffect(message, 20)
-
     return (
       <div {...props} ref={ref} className={cn("flex gap-3", className)}>
         <div className="relative flex w-10">
@@ -115,7 +117,13 @@ const ChatMessageCard = React.forwardRef<HTMLDivElement, MessageCardProps>(
             )}
           >
             <div ref={messageRef} className={"pr-20 text-small"}>
-              {hasFailed ? failedMessage : <Markdown>{animatedText}</Markdown>}
+              {isTyping ? (
+                <span className={styles.typingIndicator}>
+                    <Markdown>{message}</Markdown>   
+                </span>
+              ) : (
+                <Markdown>{message}</Markdown>
+              )}
             </div>
             {/* {showFeedback && !hasFailed && (
               <div className="absolute right-2 top-2 flex rounded-full bg-content2 shadow-small">

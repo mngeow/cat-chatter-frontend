@@ -8,62 +8,72 @@ import {cn} from "@nextui-org/react";
 
 import PromptInput from "../PromptInput/PromptInput";
 
-export default function Component(
-  props: TextAreaProps & {classNames?: Record<"button" | "buttonIcon", string>},
-) {
-  const [prompt, setPrompt] = React.useState<string>("");
+export type PromptSubmitHandler = (e: React.FormEvent<HTMLFormElement>) => Promise<void>;
 
-  return (
-    <form className="flex w-full items-start gap-2">
-      <PromptInput
+export interface PromptInputBoxProps {
+    classNames?: Record<"button" | "buttonIcon", string>
+    prompt: string
+    setPrompt: React.Dispatch<React.SetStateAction<string>>
+    promptSubmitHandler: PromptSubmitHandler
+}
+
+export default function Component(
+  props: TextAreaProps & PromptInputBoxProps,
+) {
+    const prompt = props.prompt;
+    const setPrompt = props.setPrompt;
+    return (
+    <form className="flex w-full items-start gap-2" onSubmit={props.promptSubmitHandler}>
+        <PromptInput
         {...props}
         classNames={{
-          innerWrapper: cn("items-center", props.classNames?.innerWrapper),
-          input: cn(
+            innerWrapper: cn("items-center", props.classNames?.innerWrapper),
+            input: cn(
             "text-medium data-[has-start-content=true]:ps-0 data-[has-start-content=true]:pe-0 text-slate-500",
             props.classNames?.input,
-          ),
+            ),
         }}
         endContent={
-          <div className="flex gap-2">
+            <div className="flex gap-2">
             {!prompt && (
-              <Tooltip showArrow content="Speak">
+                <Tooltip showArrow content="Speak">
                 <Button isIconOnly radius="full" variant="light">
-                  <Icon className="text-default-500" icon="solar:microphone-3-linear" width={20} />
+                    <Icon className="text-default-500" icon="solar:microphone-3-linear" width={20} />
                 </Button>
-              </Tooltip>
+                </Tooltip>
             )}
             <Tooltip showArrow content="Send message">
-              <Button
+                <Button
                 isIconOnly
                 className={cn(props?.classNames?.button || "",prompt ? "bg-slate-500" : "bg-slate-300")}
                 isDisabled={!prompt}
                 radius="full"
                 variant={!prompt ? "flat" : "solid"}
-              >
+                type="submit"
+                >
                 <Icon
-                  className={cn(
+                    className={cn(
                     "[&>path]:stroke-[2px]",
                     !prompt ? "text-default-500" : "text-primary-foreground",
                     props?.classNames?.buttonIcon || "",
-                  )}
-                  icon="solar:arrow-up-linear"
-                  width={20}
+                    )}
+                    icon="solar:arrow-up-linear"
+                    width={20}
                 />
-              </Button>
+                </Button>
             </Tooltip>
-          </div>
+            </div>
         }
         startContent={
-          <Tooltip showArrow content="Add file">
+            <Tooltip showArrow content="Add file">
             <Button isIconOnly className="p-[10px]" radius="full" variant="light">
-              <Icon className="text-default-500" icon="solar:paperclip-linear" width={20} />
+                <Icon className="text-default-500" icon="solar:paperclip-linear" width={20} />
             </Button>
-          </Tooltip>
+            </Tooltip>
         }
         value={prompt}
         onValueChange={setPrompt}
-      />
+        />
     </form>
-  );
+    );
 }
