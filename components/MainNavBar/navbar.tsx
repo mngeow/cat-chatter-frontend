@@ -47,13 +47,13 @@ export default function MainNavBar(props: NavbarProps) {
             Home
           </Link>
         </NavbarItem>
-        <NavbarItem isActive={pathname === "/pricing"}>
+        <NavbarItem isActive={pathname === "/chat"}>
           <Link 
-            className={pathname === "/pricing" ? "text-white" : "text-gray-500"}
-            href="/pricing" 
+            className={pathname === "/chat" ? "text-white" : "text-gray-500"}
+            href="/chat" 
             size="sm"
           >
-            Pricing
+            Chat
           </Link>
         </NavbarItem>
         <NavbarItem isActive={pathname === "/about"}>
