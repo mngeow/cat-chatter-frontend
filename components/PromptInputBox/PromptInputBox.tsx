@@ -33,6 +33,12 @@ export default function Component(
             props.classNames?.input,
             ),
         }}
+        onKeyDown={(e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                props.promptSubmitHandler(e as any);
+            }
+        }}
         endContent={
             <div className="flex gap-2">
             {!prompt && (

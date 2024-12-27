@@ -118,7 +118,7 @@ const ChatMessageCard = React.forwardRef<HTMLDivElement, MessageCardProps>(
           >
             <div ref={messageRef} className={"pr-20 text-small"}>
               {isTyping ? (
-                <span className={styles.typingIndicator}>
+                <span className={cn(styles.typingIndicator,"flex flex-col")}>
                     <Markdown>{message}</Markdown>   
                 </span>
               ) : (

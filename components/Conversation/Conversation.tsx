@@ -21,6 +21,8 @@ export default function Conversation() {
 
         setChatMessages(prev => [...prev, userMessage, aiMessage]);
 
+        setPrompt('');
+
         try {
             const response = await fetch('http://localhost:9000/api/chat', {
                 method: 'POST',
@@ -80,6 +82,10 @@ export default function Conversation() {
                 { role: 'assistant', content: 'Sorry, an error occurred while processing your request.' , isTyping: false}
             ]);
         }
+
+        finally {
+            setPrompt('');
+        }
     }
 
   return (
@@ -95,7 +101,7 @@ export default function Conversation() {
           }
           currentAttempt={index === 1 ? 2 : 1}
           message={content}
-          messageClassName={role === "user" ? "bg-content3 text-content3-foreground bg-yellow-600 text-sky-50" : "bg-yellow-600"}
+          messageClassName={role === "user" ? "bg-content3 text-content3-foreground border border-slate-300  bg-amber-700 text-slate-300" : "bg-slate-600"}
           showFeedback={role === "assistant"}
           className={role === "user" ? "flex-row-reverse" : ""}
           isTyping={isTyping}
