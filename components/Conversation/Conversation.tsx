@@ -6,10 +6,38 @@ import ChatMessageCard from "../ChatMessageCard/ChatMessageCard";
 import PromptInputBox from "../PromptInputBox/PromptInputBox";
 import { ChatMessage } from "@/types/messages";
 
-export default function Conversation() {
+export interface ConversationProps {
+    chatID: string
+}
+
+export default function Conversation(props: ConversationProps) {
+
     const [chatMessages, setChatMessages] = React.useState<ChatMessage[]>([]);
 
     const [prompt, setPrompt] = React.useState<string>('');
+
+    React.useEffect(() => {
+        const fetchData = async () => {
+            const response = await fetch(`http://localhost:9000/api/chat/${props.chatID}`,{
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            const results = await response.json();
+
+            const formattedMessages: ChatMessage[] = results.conversation_history.map((msg: any) => ({
+                role: msg.role,
+                content: msg.content,
+                isTyping: false
+            }));
+
+            setChatMessages(formattedMessages);
+        };
+
+        fetchData().catch(console.error);
+    }, []);
 
     const promptHandler = async (e: React.FormEvent) => {
 
@@ -24,8 +52,8 @@ export default function Conversation() {
         setPrompt('');
 
         try {
-            const response = await fetch('http://localhost:9000/api/chat', {
-                method: 'POST',
+            const response = await fetch(`http://localhost:9000/api/chat/${props.chatID}`, {
+                method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
                 },
