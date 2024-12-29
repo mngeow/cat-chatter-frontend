@@ -8,6 +8,7 @@ import { ChatMessage } from "@/types/messages";
 
 export interface ConversationProps {
     chatID: string
+    initialPrompt?: string;
 }
 
 export default function Conversation(props: ConversationProps) {
@@ -34,16 +35,23 @@ export default function Conversation(props: ConversationProps) {
             }));
 
             setChatMessages(formattedMessages);
+
+            if (formattedMessages.length === 0 && props.initialPrompt) {
+                setPrompt(props.initialPrompt);
+                const event = new Event('submit') as any;
+                await promptHandler(event, props.initialPrompt);
+            }
         };
 
         fetchData().catch(console.error);
-    }, []);
+    }, [props.chatID, props.initialPrompt]);
 
-    const promptHandler = async (e: React.FormEvent) => {
-
+    const promptHandler = async (e: React.FormEvent, initialPrompt?: string) => {
         e.preventDefault();
 
-        const userMessage: ChatMessage = { role: 'user', content: prompt , isTyping: false};
+        const messageToSend = initialPrompt || prompt;
+
+        const userMessage: ChatMessage = { role: 'user', content: messageToSend, isTyping: false };
 
         const aiMessage: ChatMessage = {role: 'assistant', content: '', isTyping: true}
 
@@ -57,7 +65,7 @@ export default function Conversation(props: ConversationProps) {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ message: prompt }),
+                body: JSON.stringify({ message: messageToSend }),
             });
 
             if (!response.ok) {
@@ -117,7 +125,7 @@ export default function Conversation(props: ConversationProps) {
     }
 
   return (
-    <div className="flex flex-col gap-4 px-1">
+    <div className="flex flex-col gap-4 px-1 w-full">
       {chatMessages.map(({role, content, isTyping}, index) => (
         <ChatMessageCard
           key={index}

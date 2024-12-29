@@ -1,10 +1,14 @@
 "use client";
 
-import { useParams } from 'next/navigation'
+import { useParams, useSearchParams } from 'next/navigation'
 import Conversation from '@/components/Conversation/Conversation';
  
 export default function Chat() {
     const params = useParams()
+    const searchParams = useSearchParams()
+
+    const initialPrompt = searchParams.get('prompt') ?? undefined;
+
     const id = params.chat_id
     
     if (!id || typeof id !== 'string') {
@@ -12,6 +16,6 @@ export default function Chat() {
     }
 
     return (
-        <Conversation chatID={id}/>
+        <Conversation chatID={id} initialPrompt={initialPrompt}/>
     )
 }
