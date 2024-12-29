@@ -23,7 +23,7 @@ export default function Component(
     const prompt = props.prompt;
     const setPrompt = props.setPrompt;
     return (
-    <form className="flex w-full items-start gap-2 bg-white/30" onSubmit={props.promptSubmitHandler}>
+    <form className="flex w-full items-start gap-2 bg-white/30 p-4 min-h-[200px]" onSubmit={props.promptSubmitHandler}>
         <PromptInput
         {...props}
         classNames={{

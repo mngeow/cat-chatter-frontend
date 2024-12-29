@@ -28,6 +28,8 @@ export default function ChatMain() {
     }
 
     return (
-        <PromptInputBox prompt={prompt} setPrompt={setPrompt} promptSubmitHandler={promptHandler}/>
+        <div className="flex flex-col h-screen justify-center items-center">
+            <PromptInputBox prompt={prompt} setPrompt={setPrompt} promptSubmitHandler={promptHandler}/>
+        </div>
     )
 }
