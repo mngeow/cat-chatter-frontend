@@ -37,7 +37,7 @@ export default function Conversation(props: ConversationProps) {
             setChatMessages(formattedMessages);
 
             if (formattedMessages.length === 0 && props.initialPrompt) {
-                setPrompt(props.initialPrompt);
+                // setPrompt(props.initialPrompt);
                 const event = new Event('submit') as any;
                 await promptHandler(event, props.initialPrompt);
             }
@@ -53,7 +53,7 @@ export default function Conversation(props: ConversationProps) {
 
         const userMessage: ChatMessage = { role: 'user', content: messageToSend, isTyping: false };
 
-        const aiMessage: ChatMessage = {role: 'assistant', content: '', isTyping: true}
+        const aiMessage: ChatMessage = {role: 'assistant', content: '', isTyping: false}
 
         setChatMessages(prev => [...prev, userMessage, aiMessage]);
 
@@ -105,7 +105,7 @@ export default function Conversation(props: ConversationProps) {
                 newMessages[newMessages.length - 1] = {
                     role: 'assistant',
                     content: accumulatedContent,
-                    isTyping: true
+                    isTyping: false
                 };
                 return newMessages;
             });

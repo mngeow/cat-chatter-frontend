@@ -95,7 +95,7 @@ const ChatMessageCard = React.forwardRef<HTMLDivElement, MessageCardProps>(
     );
 
     return (
-      <div {...props} ref={ref} className={cn("flex gap-3", className)}>
+      <div {...props} ref={ref} className={cn("flex", className)}>
         <div className="relative flex w-10">
           <Badge
             isOneChar
@@ -118,7 +118,7 @@ const ChatMessageCard = React.forwardRef<HTMLDivElement, MessageCardProps>(
           >
             <div ref={messageRef} className={"pr-20 text-small"}>
               {isTyping ? (
-                <span className={cn(styles.typingIndicator,"flex flex-col")}>
+                <span className={cn("motion-preset-typewriter motion-duration-75","flex flex-col")}>
                     <Markdown>{message}</Markdown>   
                 </span>
               ) : (
