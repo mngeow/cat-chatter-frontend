@@ -6,8 +6,6 @@ import {useClipboard} from "@nextui-org/use-clipboard";
 import {Icon} from "@iconify/react";
 import {cn} from "@nextui-org/react";
 import Markdown from 'react-markdown';
-import { useTypingEffect } from "@/hooks/useTypingEffect";
-import styles from './ChatMessageCard.module.css';
 
 export type MessageCardProps = React.HTMLAttributes<HTMLDivElement> & {
   avatar?: string;
