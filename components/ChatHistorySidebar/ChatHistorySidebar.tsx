@@ -306,6 +306,14 @@ export default function ChatHistorySidebar({
       >
         {content}
       </SidebarDrawer>
+        <Button isIconOnly className="flex sm:hidden items-center justify-center border border-solid rounded-full left-4" size="sm" variant="light" onPress={onOpen}>
+            <Icon
+                className="text-default-500"
+                height={24}
+                icon="solar:hamburger-menu-outline"
+                width={24}
+            />
+        </Button>
       {/* <div className="flex w-full flex-col px-4 sm:max-w-[calc(100%_-_288px)] bg-[#fdf6ec]">
         <header
           className={cn(
