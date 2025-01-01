@@ -8,6 +8,6 @@ const pool = new Pool({
     connectionString: serverEnvs.DATABASE_URL
 })
 
-const db = drizzle(pool);
+export const db = drizzle(pool);
 
 export const chatServiceDep = new Dependency(()=>new ChatService(db));

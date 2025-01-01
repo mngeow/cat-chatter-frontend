@@ -4,20 +4,19 @@ import { createChatSchema, createChatResponseSchema } from '@/server/dao/chat/sc
 import { createChatSchemaInput, createChatResponseSchemaOutput } from './types';
 import { chatsTable } from '@/db/schema';
 import { parse } from 'valibot';
+import { PostgresJsTransaction } from 'drizzle-orm/postgres-js';
 
 export class ChatDAO{
-    private db: NodePgDatabase & {
-        $client: Pool;
-    };
+    private tx: PostgresJsTransaction<any,any>
 
-    constructor(db: NodePgDatabase & {$client: Pool}) {
-        this.db = db;
+    constructor(tx: PostgresJsTransaction<any,any>) {
+        this.tx = tx;
     };
 
     async createChat(createChatObj: createChatSchemaInput): Promise<createChatResponseSchemaOutput> {
         try {
             const parsedData = parse(createChatSchema, createChatObj);
-            const insertedChat = await this.db.insert(chatsTable)
+            const insertedChat = await this.tx.insert(chatsTable)
                 .values({
                     ...parsedData,
                     created_at: new Date(parsedData.created_at)

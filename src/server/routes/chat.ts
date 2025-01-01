@@ -3,13 +3,13 @@ import { createChatSchema, createChatResponseSchema } from '@/server/dao/chat/sc
 import { describeRoute } from "hono-openapi";
 import { resolver, validator as vValidator } from 'hono-openapi/valibot';
 import { parse } from 'valibot'; 
-import { chatServiceDep } from '@/server/deps';
+import { ChatService } from "@/server/services/chat";
+import { db } from '@/server/deps';
 
 
 export const app = new Hono();
 
 app
-.use(chatServiceDep.middleware("chatService"))
 .post(
     '/',
     describeRoute(
@@ -28,12 +28,16 @@ app
         vValidator("json",createChatSchema),
         async (c: Context) => {
             try {
-                const body = await c.req.json();
-                const { chatService } = c.var;
-                const parsedBody = parse(createChatSchema, body);
-                const createChatResponse = await chatService.createChat(parsedBody);
-                
-                return c.json(createChatResponse, 201);
+                const responseContext = await db.transaction(async (tx) => {
+                    const body = await c.req.json();
+                    const parsedBody = parse(createChatSchema, body);
+                    const chatService = new ChatService(tx)
+                    const createChatResponse = await chatService.createChat(parsedBody);
+                    
+                    return createChatResponse;
+                });
+
+                return c.json(responseContext, 201);
             } catch (error) {
                 console.error('Error in chat creation:', error);
                 return c.json({ error: 'Failed to create chat' }, 500);
