@@ -1,9 +1,6 @@
-import { NodePgDatabase } from 'drizzle-orm/node-postgres';
-import { Pool } from 'pg';
 import { createChatSchema, createChatResponseSchema } from '@/server/dao/chat/schema';
-import { createChatSchemaInput, createChatResponseSchemaOutput } from './types';
+import { createChatSchemaT, createChatResponseSchemaT } from './types';
 import { chatsTable } from '@/db/schema';
-import { parse } from 'valibot';
 import { PostgresJsTransaction } from 'drizzle-orm/postgres-js';
 
 export class ChatDAO{
@@ -13,9 +10,9 @@ export class ChatDAO{
         this.tx = tx;
     };
 
-    async createChat(createChatObj: createChatSchemaInput): Promise<createChatResponseSchemaOutput> {
+    async createChat(createChatObj: createChatSchemaT): Promise<createChatResponseSchemaT> {
         try {
-            const parsedData = parse(createChatSchema, createChatObj);
+            const parsedData = createChatSchema.parse(createChatObj);
             const insertedChat = await this.tx.insert(chatsTable)
                 .values({
                     ...parsedData,
@@ -24,7 +21,7 @@ export class ChatDAO{
                 .returning();
             
             const res = insertedChat[0];
-            return parse(createChatResponseSchema,res)
+            return createChatResponseSchema.parse(res)
         } catch (error) {
             console.error('Error in createChat:', error);
             throw new Error('Failed to create chat: ' + (error as Error).message);

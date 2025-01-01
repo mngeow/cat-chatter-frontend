@@ -1,6 +1,5 @@
 import { createChatSchema, createChatResponseSchema } from '@/server/dao/chat/schema';
-import * as v from 'valibot';
+import z from 'zod';
 
-export type createChatResponseSchemaOutput = v.InferOutput<typeof createChatResponseSchema>
-export type createChatSchemaInput = v.InferInput<typeof createChatSchema>
-export type createChatSchemaOutput = v.InferOutput<typeof createChatSchema>
+export type createChatSchemaT = z.infer<typeof createChatSchema>
+export type createChatResponseSchemaT = z.infer<typeof createChatResponseSchema>
