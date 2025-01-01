@@ -19,7 +19,8 @@ export const createChatSchema = z.object({
 
 export const createChatResponseSchema = createChatSchema.extend({
     id: z.string(),
-    created_at: z.union([z.date(), z.string().datetime()])
-        .default(() => new Date().toISOString())
-        .transform(date => typeof date === 'string' ? date : date.toISOString())
+    created_at: z.preprocess(
+        (val) => (val instanceof Date ? val.toISOString() : val),
+        z.string().datetime()
+    )
 })

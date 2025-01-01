@@ -25,15 +25,12 @@ app
             },
             validateResponse: false,
         }),
-        validator("json",createChatSchema),
         async (c: Context) => {
             const { dbConn } = c.var;
             try {
                 const responseContext = await dbConn.transaction(async (tx:any) => {
-                    const body = await c.req.json();
-                    const parsedBody =createChatSchema.parse(body);
                     const chatService = new ChatService(tx)
-                    const createChatResponse = await chatService.createChat(parsedBody);
+                    const createChatResponse = await chatService.createChat();
                     
                     return createChatResponse;
                 });

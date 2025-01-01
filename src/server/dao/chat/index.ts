@@ -10,13 +10,13 @@ export class ChatDAO{
         this.tx = tx;
     };
 
-    async createChat(createChatObj: createChatSchemaT): Promise<createChatResponseSchemaT> {
+    async createChat(): Promise<createChatResponseSchemaT> {
         try {
-            const parsedData = createChatSchema.parse(createChatObj);
             const insertedChat = await this.tx.insert(chatsTable)
                 .values({
-                    ...parsedData,
-                    created_at: new Date(parsedData.created_at)
+                    conversation_history: [],
+                    created_at: new Date(),
+                    description: 'placeholder',
                 })
                 .returning();
             

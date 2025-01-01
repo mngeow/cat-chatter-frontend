@@ -11,8 +11,8 @@ export class ChatService {
         this.chatDao = new ChatDAO(tx);
     }
 
-    async createChat(createChatPayload: createChatSchemaT): Promise<createChatResponseSchemaT> {
-        const res = await this.chatDao.createChat(createChatPayload)
+    async createChat(): Promise<createChatResponseSchemaT> {
+        const res = await this.chatDao.createChat()
 
         if (res.description == 'error'){
             throw Error('Simulated error!')
