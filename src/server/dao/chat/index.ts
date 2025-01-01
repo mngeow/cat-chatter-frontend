@@ -1,5 +1,5 @@
 import { createChatSchema, createChatResponseSchema } from '@/server/dao/chat/schema';
-import { createChatSchemaT, createChatResponseSchemaT } from './types';
+import { createChatSchemaT, createChatResponseSchemaT } from '@/server/dao/chat/types';
 import { chatsTable } from '@/db/schema';
 import { PostgresJsTransaction } from 'drizzle-orm/postgres-js';
 import { eq }  from 'drizzle-orm';
@@ -32,5 +32,13 @@ export class ChatDAO{
     async getChatByID(id: string): Promise<createChatResponseSchemaT | null> {
         const res = await this.tx.select().from(chatsTable).where(eq(chatsTable.id,id));
         return res[0] ? createChatResponseSchema.parse(res[0]) : null;
+    }
+
+    async listChats(): Promise<createChatResponseSchemaT[]> {
+        const res = await this.tx.select().from(chatsTable);
+        const chatList = res.map((item) => {
+            return createChatResponseSchema.parse(item)
+        })
+        return chatList;
     }
 }

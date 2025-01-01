@@ -1,5 +1,6 @@
 import { Hono, Context } from 'hono';
-import { createChatSchema, createChatResponseSchema } from '@/server/dao/chat/schema';
+import { createChatResponseSchema } from '@/server/dao/chat/schema';
+import { listChatResponseSchema } from '@/server/services/chat/schema';
 import { describeRoute } from "hono-openapi";
 import { resolver, validator } from "hono-openapi/zod";
 import { ChatService } from "@/server/services/chat";
@@ -79,6 +80,32 @@ app
         const chatResponse = await dbConn.transaction(async (tx: any) => {
             const chatService = new ChatService(tx)
             const chatResponse = await chatService.getChatByID(id)
+            return chatResponse;
+        });
+        return c.json(chatResponse,200);
+    }
+)
+
+app
+.get(
+    '/',
+    describeRoute({
+        description: 'List all chats',
+        responses: {
+            200: {
+                description: 'List all chats',
+                content: {
+                    'application/json': { schema: resolver(listChatResponseSchema) },
+                },
+            }
+        },
+        validateResponse: false,
+    }),
+    async (c: Context) => {
+        const { dbConn } = c.var;
+        const chatResponse = await dbConn.transaction(async (tx: any) => {
+            const chatService = new ChatService(tx)
+            const chatResponse = await chatService.listChats()
             return chatResponse;
         });
         return c.json(chatResponse,200);
