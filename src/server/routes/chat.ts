@@ -5,12 +5,15 @@ import { resolver, validator } from "hono-openapi/zod";
 import { ChatService } from "@/server/services/chat";
 import { dbConn } from '@/server/deps';
 import z from "zod";
-import { HTTPException } from 'hono/http-exception'
+import { JSONErrorFmt } from '@/server/routes/middlewares';
 
 export const app = new Hono();
 
 app
 .use(dbConn.middleware("dbConn"))
+.use(JSONErrorFmt)
+
+app
 .post(
     '/',
     describeRoute(
@@ -45,7 +48,6 @@ app
 );
 
 app
-.use(dbConn.middleware("dbConn"))
 .get(
     '/:id',
     describeRoute({
@@ -72,21 +74,13 @@ app
     }),
     validator("param", z.object({id: z.string()})),
     async (c: Context) => {
-        try {
-            const { dbConn } = c.var;
-            const id = c.req.param('id')
-            const chatResponse = await dbConn.transaction(async (tx: any) => {
-                const chatService = new ChatService(tx)
-                const chatResponse = await chatService.getChatByID(id)
-                return chatResponse;
-            });
-            return c.json(chatResponse,200);
-        } catch (error) {
-            if (error instanceof HTTPException) {
-                return c.json({statusCode: error.status, errorMesage: error.message, errorCode: error.cause})
-            }
-            console.error(error);
-            return c.json({statusCode: 500, message: 'Internal Server Error', code: 'InternalServerError'})
-        }
+        const { dbConn } = c.var;
+        const id = c.req.param('id')
+        const chatResponse = await dbConn.transaction(async (tx: any) => {
+            const chatService = new ChatService(tx)
+            const chatResponse = await chatService.getChatByID(id)
+            return chatResponse;
+        });
+        return c.json(chatResponse,200);
     }
 )
