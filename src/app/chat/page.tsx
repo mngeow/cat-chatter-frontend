@@ -13,7 +13,7 @@ export default function ChatMain() {
     const promptHandler = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        const response = await fetch('http://localhost:9000/api/chat',{
+        const response = await fetch('/api/chat',{
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

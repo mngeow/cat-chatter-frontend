@@ -126,7 +126,7 @@ export default function ChatHistorySidebar({
 
   React.useEffect(() => {
     const fetchChats = async () => {
-        const response = await fetch('http://localhost:9000/api/chats',{
+        const response = await fetch('/api/chat',{
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json'

@@ -19,7 +19,7 @@ export default function Conversation(props: ConversationProps) {
 
     React.useEffect(() => {
         const fetchData = async () => {
-            const response = await fetch(`http://localhost:9000/api/chat/${props.chatID}`,{
+            const response = await fetch(`/api/chat/${props.chatID}`,{
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json'
@@ -60,12 +60,12 @@ export default function Conversation(props: ConversationProps) {
         setPrompt('');
 
         try {
-            const response = await fetch(`http://localhost:9000/api/chat/${props.chatID}`, {
+            const response = await fetch(`/api/chat/${props.chatID}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ message: messageToSend }),
+                body: JSON.stringify({ content: messageToSend }),
             });
 
             if (!response.ok) {
