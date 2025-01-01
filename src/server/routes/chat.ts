@@ -1,6 +1,6 @@
 import { Hono, Context } from 'hono';
 import { createChatResponseSchema } from '@/server/dao/chat/schema';
-import { listChatResponseSchema } from '@/server/services/chat/schema';
+import { listChatResponseSchema, askQuestionRequestSchema } from '@/server/services/chat/schema';
 import { describeRoute } from "hono-openapi";
 import { resolver, validator } from "hono-openapi/zod";
 import { ChatService } from "@/server/services/chat";
@@ -109,5 +109,26 @@ app
             return chatResponse;
         });
         return c.json(chatResponse,200);
+    }
+)
+
+app
+.put(
+    '/:id',
+    describeRoute({
+        description: 'List all chats',
+        validateResponse: false,
+    }),
+    validator('json',askQuestionRequestSchema),
+    async (c: Context) => {
+        const { dbConn } = c.var;
+        const id = c.req.param('id');
+        const requestBody = await c.req.json();
+        const chatResponseStream = await dbConn.transaction(async (tx: any) => {
+            const chatService = new ChatService(tx)
+            const chatResponse = await chatService.askQuestion(c,id,askQuestionRequestSchema.parse(requestBody))
+            return chatResponse;
+        });
+        return chatResponseStream;
     }
 )

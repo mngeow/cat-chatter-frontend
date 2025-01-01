@@ -41,4 +41,9 @@ export class ChatDAO{
         })
         return chatList;
     }
+
+    async updateChatByID(chatObject: createChatResponseSchemaT): Promise<createChatResponseSchemaT> {
+        const res = await this.tx.update(chatsTable).set({conversation_history: chatObject.conversation_history, description: chatObject.description}).where(eq(chatsTable.id,chatObject.id));
+        return res[0];
+    }
 }
