@@ -3,12 +3,13 @@ import { createChatSchema, createChatResponseSchema } from '@/server/dao/chat/sc
 import { describeRoute } from "hono-openapi";
 import { resolver, validator } from "hono-openapi/zod";
 import { ChatService } from "@/server/services/chat";
-import { db } from '@/server/deps';
+import { dbConn } from '@/server/deps';
 
 
 export const app = new Hono();
 
 app
+.use(dbConn.middleware("dbConn"))
 .post(
     '/',
     describeRoute(
@@ -26,8 +27,9 @@ app
         }),
         validator("json",createChatSchema),
         async (c: Context) => {
+            const { dbConn } = c.var;
             try {
-                const responseContext = await db.transaction(async (tx) => {
+                const responseContext = await dbConn.transaction(async (tx:any) => {
                     const body = await c.req.json();
                     const parsedBody =createChatSchema.parse(body);
                     const chatService = new ChatService(tx)
