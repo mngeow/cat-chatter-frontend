@@ -4,6 +4,7 @@ import { describeRoute } from "hono-openapi";
 import { resolver, validator } from "hono-openapi/zod";
 import { ChatService } from "@/server/services/chat";
 import { dbConn } from '@/server/deps';
+import z from "zod";
 
 
 export const app = new Hono();
@@ -41,4 +42,38 @@ app
                 return c.json({ error: 'Failed to create chat' }, 500);
             }
         }
+);
+
+app
+.use(dbConn.middleware("dbConn"))
+.get(
+    '/:id',
+    describeRoute({
+        description: 'Fetch a chat by ID',
+        responses: {
+            200: {
+                description: 'Returns chat by ID',
+                content: {
+                    'application/json': { schema: resolver(createChatResponseSchema) },
+                },
+            },
+        },
+        validateResponse: false,
+    }),
+    validator("param", z.object({id: z.string()})),
+    async (c: Context) => {
+        const { dbConn } = c.var;
+        const id = c.req.param('id')
+        try {
+            const responseContext = await dbConn.transaction(async (tx: any) => {
+                const chatService = new ChatService(tx)
+                const chatResponse = await chatService.getChatByID(id)
+                return chatResponse;
+            });
+            return c.json(responseContext,200);
+        } catch (error) {
+            console.error('Error in fetching chat:', error);
+            return c.json({ error: 'Failed to fetch chat' }, 500);
+        }
+    }
 );

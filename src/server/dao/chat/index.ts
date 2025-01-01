@@ -2,6 +2,7 @@ import { createChatSchema, createChatResponseSchema } from '@/server/dao/chat/sc
 import { createChatSchemaT, createChatResponseSchemaT } from './types';
 import { chatsTable } from '@/db/schema';
 import { PostgresJsTransaction } from 'drizzle-orm/postgres-js';
+import { eq }  from 'drizzle-orm';
 
 export class ChatDAO{
     private tx: PostgresJsTransaction<any,any>
@@ -26,5 +27,10 @@ export class ChatDAO{
             console.error('Error in createChat:', error);
             throw new Error('Failed to create chat: ' + (error as Error).message);
         }
+    }
+
+    async getChatByID(id: string): Promise<createChatResponseSchemaT | null> {
+        const res = await this.tx.select().from(chatsTable).where(eq(chatsTable.id,id));
+        return res[0] ? createChatResponseSchema.parse(res[0]) : null;
     }
 }

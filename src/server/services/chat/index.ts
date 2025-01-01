@@ -13,10 +13,11 @@ export class ChatService {
 
     async createChat(): Promise<createChatResponseSchemaT> {
         const res = await this.chatDao.createChat()
-
-        if (res.description == 'error'){
-            throw Error('Simulated error!')
-        }
         return res
     }
+
+    async getChatByID(id: string): Promise<createChatResponseSchemaT> {
+        return await this.chatDao.getChatByID(id) ;
+    }
+
 }
