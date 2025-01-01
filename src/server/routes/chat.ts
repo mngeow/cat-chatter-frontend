@@ -17,7 +17,7 @@ app
             description: 'Create a new chat',
             responses: {
                 201: {
-                    description: 'Chat successfuly created',
+                    description: 'Chat successfully created',
                     content: {
                         'application/json': { schema: resolver(createChatResponseSchema) },
                     },
@@ -27,14 +27,16 @@ app
         }),
         vValidator("json",createChatSchema),
         async (c: Context) => {
-            const body = await c.req.json();
-            const { chatService } = c.var;
-            const parsedBody = parse(createChatSchema, body);
-            await chatService.createChat(parsedBody);
-            c.status(201);
-            return c.json({
-                id: "123",
-                ...parsedBody
-            });
+            try {
+                const body = await c.req.json();
+                const { chatService } = c.var;
+                const parsedBody = parse(createChatSchema, body);
+                const createChatResponse = await chatService.createChat(parsedBody);
+                
+                return c.json(createChatResponse, 201);
+            } catch (error) {
+                console.error('Error in chat creation:', error);
+                return c.json({ error: 'Failed to create chat' }, 500);
+            }
         }
 );

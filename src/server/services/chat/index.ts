@@ -1,7 +1,7 @@
 import { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import { Pool } from 'pg';
 import { ChatDAO } from '@/server/dao/chat';
-import { createChatSchema, createChatResponseSchema } from '@/server/dao/chat/schema';
+import { createChatSchemaInput, createChatResponseSchemaOutput } from '@/server/dao/chat/types';
 
 export class ChatService {
     private chatDao: ChatDAO;
@@ -10,7 +10,8 @@ export class ChatService {
         this.chatDao = new ChatDAO(db);
     }
 
-    async createChat(createChatPayload: typeof createChatSchema): Promise<void> {
-        await this.chatDao.createChat(createChatPayload)
+    async createChat(createChatPayload: createChatSchemaInput): Promise<createChatResponseSchemaOutput> {
+        const res = await this.chatDao.createChat(createChatPayload)
+        return res
     }
 }
