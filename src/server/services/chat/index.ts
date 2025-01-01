@@ -3,6 +3,7 @@ import { Pool } from 'pg';
 import { ChatDAO } from '@/server/dao/chat';
 import { createChatSchemaT, createChatResponseSchemaT } from '@/server/dao/chat/types';
 import { PostgresJsTransaction } from 'drizzle-orm/postgres-js';
+import { HTTPException } from 'hono/http-exception'
 
 export class ChatService {
     private chatDao: ChatDAO;
@@ -17,7 +18,17 @@ export class ChatService {
     }
 
     async getChatByID(id: string): Promise<createChatResponseSchemaT> {
-        return await this.chatDao.getChatByID(id) ;
-    }
+        const chat = await this.chatDao.getChatByID(id) ;
 
+        if (chat == null) {
+
+            const message = `Chat with id ${id} not found`
+
+            throw new HTTPException(
+                404, {message: message, cause: 'ChatNotFound'}
+            )
+        }
+
+        return chat;
+    }
 }

@@ -5,7 +5,7 @@ import { resolver, validator } from "hono-openapi/zod";
 import { ChatService } from "@/server/services/chat";
 import { dbConn } from '@/server/deps';
 import z from "zod";
-
+import { HTTPException } from 'hono/http-exception'
 
 export const app = new Hono();
 
@@ -57,23 +57,36 @@ app
                     'application/json': { schema: resolver(createChatResponseSchema) },
                 },
             },
+            404: {
+                description: 'Chat not found',
+                content: {
+                    'application/json': {schema: resolver(z.object({
+                        statusCode: z.number(),
+                        errorMessage: z.string(),
+                        errorCode: z.string()
+                    }))}
+                },
+            },
         },
         validateResponse: false,
     }),
     validator("param", z.object({id: z.string()})),
     async (c: Context) => {
-        const { dbConn } = c.var;
-        const id = c.req.param('id')
         try {
-            const responseContext = await dbConn.transaction(async (tx: any) => {
+            const { dbConn } = c.var;
+            const id = c.req.param('id')
+            const chatResponse = await dbConn.transaction(async (tx: any) => {
                 const chatService = new ChatService(tx)
                 const chatResponse = await chatService.getChatByID(id)
                 return chatResponse;
             });
-            return c.json(responseContext,200);
+            return c.json(chatResponse,200);
         } catch (error) {
-            console.error('Error in fetching chat:', error);
-            return c.json({ error: 'Failed to fetch chat' }, 500);
+            if (error instanceof HTTPException) {
+                return c.json({statusCode: error.status, errorMesage: error.message, errorCode: error.cause})
+            }
+            console.error(error);
+            return c.json({statusCode: 500, message: 'Internal Server Error', code: 'InternalServerError'})
         }
     }
-);
+)
